@@ -2,6 +2,7 @@ import QRCode from "qrcode";
 
 let peerConnection;
 let dataChannel;
+let iceCandidatesQueue = [];
 
 const webrtcMiddleware = (store) => (next) => (action) => {
   if (action.type === "webrtc/initiateConnection") {
@@ -46,21 +47,37 @@ const initiateConnection = async (store) => {
 };
 
 const receiveSignal = async (store, signal) => {
-  console.log("[webrtc] receiveSignal", signal);
-  if (signal.sdp) {
-    await peerConnection.setRemoteDescription(
-      new RTCSessionDescription(signal.sdp)
-    );
-    if (signal.sdp.type === "offer") {
-      const answer = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(answer);
+  try {
+    console.log("[webrtc] receiveSignal", signal);
+    if (signal.sdp) {
+      await peerConnection.setRemoteDescription(
+        new RTCSessionDescription(signal.sdp)
+      );
+      if (signal.sdp.type === "offer") {
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
 
-      const qrCodeData = JSON.stringify({sdp: answer});
-      const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
-      store.dispatch({type: "webrtc/setQrCodeDataURL", payload: qrCodeUrl});
+        const qrCodeData = JSON.stringify({sdp: answer});
+        const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+        store.dispatch({type: "webrtc/setQrCodeDataURL", payload: qrCodeUrl});
+      }
+
+      // Add queued ICE candidates
+      iceCandidatesQueue.forEach(async (candidate) => {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+      });
+      iceCandidatesQueue = [];
+    } else if (signal.candidate) {
+      if (peerConnection.remoteDescription) {
+        await peerConnection.addIceCandidate(
+          new RTCIceCandidate(signal.candidate)
+        );
+      } else {
+        iceCandidatesQueue.push(signal.candidate);
+      }
     }
-  } else if (signal.candidate) {
-    await peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
+  } catch (error) {
+    console.error(error);
   }
 };
 
