@@ -9,7 +9,7 @@ import DialogFs from "Features/layout/components/DialogFs";
 import BoxFlexVStretch from "Features/layout/components/BoxFlexVStretch";
 import BoxCenter from "Features/layout/components/BoxCenter";
 
-export default function ButtonQrCodeReader() {
+export default function ButtonQrCodeReader({onScan}) {
   // string
 
   const scanS = "Scanner le QR code de l'appareil sur lequel vous connecter";
@@ -25,7 +25,7 @@ export default function ButtonQrCodeReader() {
   }
 
   function handleScan(qrcode) {
-    console.log("qrcode", qrcode);
+    if (onScan) onScan(qrcode);
     setOpen(false);
   }
 
