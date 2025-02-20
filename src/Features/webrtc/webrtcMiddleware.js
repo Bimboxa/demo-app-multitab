@@ -49,6 +49,12 @@ const initiateConnection = async (store) => {
 const receiveSignal = async (store, signal) => {
   try {
     console.log("[webrtc] receiveSignal", signal);
+
+    if (!peerConnection) {
+      console.error("peerConnection is not initialized");
+      return;
+    }
+
     if (signal.sdp) {
       await peerConnection.setRemoteDescription(
         new RTCSessionDescription(signal.sdp)
