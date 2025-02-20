@@ -51,8 +51,29 @@ const receiveSignal = async (store, signal) => {
     console.log("[webrtc] receiveSignal", signal);
 
     if (!peerConnection) {
-      console.error("peerConnection is not initialized");
-      return;
+      console.log("Initializing peerConnection in receiveSignal");
+      peerConnection = new RTCPeerConnection();
+
+      peerConnection.ondatachannel = (event) => {
+        dataChannel = event.channel;
+
+        dataChannel.onmessage = (event) => {
+          const action = JSON.parse(event.data);
+          store.dispatch(action);
+        };
+      };
+
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          const qrCodeData = JSON.stringify({candidate: event.candidate});
+          QRCode.toDataURL(qrCodeData).then((qrCodeUrl) => {
+            store.dispatch({
+              type: "webrtc/setQrCodeDataURL",
+              payload: qrCodeUrl,
+            });
+          });
+        }
+      };
     }
 
     if (signal.sdp) {
