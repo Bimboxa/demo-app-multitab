@@ -54,20 +54,21 @@ const receiveSignal = async (store, signal) => {
       console.log("Initializing peerConnection in receiveSignal");
       peerConnection = new RTCPeerConnection();
 
-      dataChannel = peerConnection.createDataChannel("shapes");
-      dataChannel.onmessage = (event) => {
-        const action = JSON.parse(event.data);
-        store.dispatch(action);
-      };
-
-      // peerConnection.ondatachannel = (event) => {
-      //   dataChannel = event.channel;
-
-      //   dataChannel.onmessage = (event) => {
-      //     const action = JSON.parse(event.data);
-      //     store.dispatch(action);
-      //   };
+      // dataChannel = peerConnection.createDataChannel("shapes");
+      // dataChannel.onmessage = (event) => {
+      //   const action = JSON.parse(event.data);
+      //   store.dispatch(action);
       // };
+
+      peerConnection.ondatachannel = (event) => {
+        console.log("[webrtc] ondatachannel", event);
+        dataChannel = event.channel;
+
+        dataChannel.onmessage = (event) => {
+          const action = JSON.parse(event.data);
+          store.dispatch(action);
+        };
+      };
 
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
