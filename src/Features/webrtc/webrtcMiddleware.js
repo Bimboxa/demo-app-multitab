@@ -46,6 +46,7 @@ const initiateConnection = async (store) => {
 };
 
 const receiveSignal = async (store, signal) => {
+  console.log("[webrtc] receiveSignal", signal);
   if (signal.sdp) {
     await peerConnection.setRemoteDescription(
       new RTCSessionDescription(signal.sdp)
