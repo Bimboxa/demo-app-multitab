@@ -9,6 +9,7 @@ export default function ButtonReceiveSignal() {
   function handleScan(data) {
     if (data) {
       const signal = JSON.parse(data);
+      console.log("[webrtc] receive signal", signal);
       dispatch(receiveSignal(signal));
     }
   }

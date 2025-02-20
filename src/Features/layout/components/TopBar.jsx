@@ -1,6 +1,6 @@
 import {Box} from "@mui/material";
 import BlockProjectName from "Features/projects/components/BlockProjectName";
-import ButtonQrCodeReader from "Features/qrcode/components/ButtonQrCodeReader";
+import ButtonReceiveSignal from "Features/webrtc/components/ButtonReceiveSignal";
 import IconButtonInitiateConnection from "Features/webrtc/components/IconButtonInitiateConnection";
 import {useSelector} from "react-redux";
 
@@ -18,7 +18,7 @@ export default function TopBar() {
     >
       <BlockProjectName />
       {deviceType === "MOBILE" ? (
-        <ButtonQrCodeReader />
+        <ButtonReceiveSignal />
       ) : (
         <IconButtonInitiateConnection />
       )}

@@ -25,7 +25,10 @@ export default function ButtonQrCodeReader({onScan}) {
   }
 
   function handleScan(qrcode) {
-    if (onScan) onScan(qrcode);
+    if (onScan) {
+      console.log("[scanning qrcode...]", qrcode);
+      onScan(qrcode);
+    }
     setOpen(false);
   }
 
