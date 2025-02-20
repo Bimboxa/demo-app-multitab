@@ -4,6 +4,12 @@ let peerConnection;
 let dataChannel;
 let iceCandidatesQueue = [];
 
+const iceServers = [
+  {urls: "stun:stun.l.google.com:19302"},
+  {urls: "stun:stun1.l.google.com:19302"},
+  {urls: "stun:stun2.l.google.com:19302"},
+];
+
 const webrtcMiddleware = (store) => (next) => (action) => {
   if (action.type === "webrtc/initiateConnection") {
     initiateConnection(store);
@@ -21,7 +27,7 @@ const webrtcMiddleware = (store) => (next) => (action) => {
 };
 
 const initiateConnection = async (store) => {
-  peerConnection = new RTCPeerConnection();
+  peerConnection = new RTCPeerConnection({iceServers});
   dataChannel = peerConnection.createDataChannel("shapes");
 
   dataChannel.onmessage = (event) => {
@@ -52,7 +58,7 @@ const receiveSignal = async (store, signal) => {
 
     if (!peerConnection) {
       console.log("Initializing peerConnection in receiveSignal");
-      peerConnection = new RTCPeerConnection();
+      peerConnection = new RTCPeerConnection({iceServers});
 
       // dataChannel = peerConnection.createDataChannel("shapes");
       // dataChannel.onmessage = (event) => {
