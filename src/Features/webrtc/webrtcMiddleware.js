@@ -10,6 +10,7 @@ const webrtcMiddleware = (store) => (next) => (action) => {
     receiveSignal(store, action.payload);
   } else if (action.type === "shapes/setSelectedShapeId") {
     console.log("[webrtc] dispatch selected shape id", action.payload);
+    console.log("[webrtc] dataChannel", dataChannel);
     if (dataChannel && dataChannel.readyState === "open") {
       console.log("[webrtc] dataChannel ready");
       dataChannel.send(JSON.stringify(action));
