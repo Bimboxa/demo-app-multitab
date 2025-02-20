@@ -51,7 +51,6 @@ export default class MapEditor {
   // shapes
 
   loadShapes(shapes) {
-    console.log("[MapEditor] loadShapes", shapes);
     this.shapesManager.createShapesNodes(shapes);
   }
 }

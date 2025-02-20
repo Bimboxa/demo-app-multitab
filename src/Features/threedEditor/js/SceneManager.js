@@ -46,8 +46,6 @@ export default class SceneManager {
     this._initRenderer();
     this.controlsManager.initControls();
 
-    console.log("[SceneManager] initScene");
-
     //this.addRandomObjects();
   };
 

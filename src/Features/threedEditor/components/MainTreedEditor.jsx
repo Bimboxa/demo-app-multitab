@@ -7,7 +7,6 @@ import {Box} from "@mui/material";
 import ThreedEditor from "Features/threedEditor/js/ThreedEditor";
 
 export default function MainThreedEditor() {
-  console.log("MainThreedEditor");
   // ref
 
   const containerRef = useRef();
