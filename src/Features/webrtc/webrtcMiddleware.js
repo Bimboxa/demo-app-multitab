@@ -9,7 +9,9 @@ const webrtcMiddleware = (store) => (next) => (action) => {
   } else if (action.type === "webrtc/receiveSignal") {
     receiveSignal(store, action.payload);
   } else if (action.type === "shapes/setSelectedShapeId") {
+    console.log("[webrtc] dispatch selected shape id", action.payload);
     if (dataChannel && dataChannel.readyState === "open") {
+      console.log("[webrtc] dataChannel ready");
       dataChannel.send(JSON.stringify(action));
     }
   }
