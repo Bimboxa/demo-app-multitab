@@ -16,39 +16,31 @@ export default function ButtonSendOffer() {
 
   const label = "Démarrer une connexion";
 
-  // data
-
-  const servicesConfigIsReady = useSelector(
-    (s) => s.settings.servicesConfigIsReady
-  );
-
   // state
 
   const [peerConnection, setPeerConnection] = useState(null);
 
   useEffect(() => {
-    if (servicesConfigIsReady) {
-      const {peerConnection, dataChannel} = createPeerConnection();
-      setPeerConnection(peerConnection);
+    const {peerConnection, dataChannel} = createPeerConnection();
+    setPeerConnection(peerConnection);
 
-      listenForAnswer(peerConnection);
+    listenForAnswer(peerConnection);
 
-      listenForIceCandidates(peerConnection, "mobile");
+    listenForIceCandidates(peerConnection, "mobile");
 
-      dataChannel.onopen = () => {
-        console.log("dataChannel opened");
-        // dispatch here the initial update.
-        // dataChannel.send(JSON.stringify({type: "shapes/INITIAL_UPDATE"}));
-      };
+    dataChannel.onopen = () => {
+      console.log("dataChannel opened");
+      // dispatch here the initial update.
+      // dataChannel.send(JSON.stringify({type: "shapes/INITIAL_UPDATE"}));
+    };
 
-      peerConnection.onicecandidate = (event) => {
-        if (event.candidate) {
-          console.log("Sending ice candidate to mobile");
-          sendIceCandidate(event.candidate, "desktop");
-        }
-      };
-    }
-  }, [servicesConfigIsReady]);
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        console.log("Sending ice candidate to mobile");
+        sendIceCandidate(event.candidate, "desktop");
+      }
+    };
+  }, []);
 
   // handler
 
@@ -57,11 +49,7 @@ export default function ButtonSendOffer() {
   }
 
   return (
-    <Button
-      onClick={handleClick}
-      variant="contained"
-      disabled={!servicesConfigIsReady}
-    >
+    <Button onClick={handleClick} variant="contained">
       {label}
     </Button>
   );

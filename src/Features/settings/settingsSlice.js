@@ -2,10 +2,8 @@ import {createSlice} from "@reduxjs/toolkit";
 
 const settingsInitialState = {
   //
-  servicesConfig: {},
+  servicesConfig: null,
   servicesConfigQrCode: null,
-  //
-  servicesConfigIsReady: false, // for async loading of the file.
   //
 };
 
@@ -19,16 +17,12 @@ export const settingsSlice = createSlice({
     setServicesConfigQrCode: (state, action) => {
       state.servicesConfigQrCode = action.payload;
     },
-    setServicesConfigIsReady: (state, action) => {
-      state.servicesConfigIsReady = action.payload;
-    },
   },
 });
 
 export const {
   setServicesConfig,
   setServicesConfigQrCode,
-  setServicesConfigIsReady,
   //
 } = settingsSlice.actions;
 

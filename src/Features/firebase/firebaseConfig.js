@@ -1,16 +1,22 @@
 import {initializeApp} from "firebase/app";
 import {getDatabase, ref, set, onValue, push} from "firebase/database";
 
-import servicesConfig from "Features/settings/servicesConfig";
-
-const firebaseConfig = servicesConfig.firebaseConfig;
+import store from "App/store";
 
 let app;
 let db;
 
-if (firebaseConfig) {
-  app = initializeApp(firebaseConfig);
-  db = getDatabase(app);
-}
+const dbPromise = new Promise((resolve) => {
+  const unsubscribe = store.subscribe(() => {
+    const servicesConfig = store.getState().settings.servicesConfig;
+    if (servicesConfig) {
+      console.log("[ServicesConfig] servicesConfig ready", servicesConfig);
+      app = initializeApp(servicesConfig.firebaseConfig);
+      db = getDatabase(app);
+      resolve(db);
+      unsubscribe();
+    }
+  });
+});
 
-export {db, ref, set, onValue, push};
+export {dbPromise, ref, set, onValue, push};

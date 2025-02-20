@@ -1,7 +1,13 @@
 import {setDataChannel, handleWebRTCMessage} from "../webrtcMiddleware";
 import store from "App/store";
 
-import {db, ref, set, onValue} from "Features/firebase/firebaseConfig";
+import {
+  dbPromise,
+  ref,
+  set,
+  push,
+  onValue,
+} from "Features/firebase/firebaseConfig";
 
 const configuration = {
   iceServers: [{urls: "stun:stun.l.google.com:19302"}],
@@ -38,6 +44,7 @@ export const createPeerConnection = (onIceCandidate, onTrack) => {
 };
 
 export const listenForAnswer = async (peerConnection) => {
+  const db = await dbPromise;
   if (db) {
     onValue(ref(db, "webrtc/answer"), (snapshot) => {
       if (snapshot.exists()) {
@@ -51,6 +58,7 @@ export const listenForAnswer = async (peerConnection) => {
 };
 
 export const listenForIceCandidates = async (peerConnection, role) => {
+  const db = await dbPromise;
   if (db) {
     onValue(ref(db, `webrtc/${role}/iceCandidates`), (snapshot) => {
       snapshot.forEach((child) => {
@@ -64,6 +72,7 @@ export const listenForIceCandidates = async (peerConnection, role) => {
 };
 
 export const listenForOffer = async (peerConnection, setAnswerCallback) => {
+  const db = await dbPromise;
   if (db) {
     onValue(ref(db, "webrtc/offer"), async (snapshot) => {
       if (snapshot.exists()) {
@@ -84,14 +93,18 @@ export const listenForOffer = async (peerConnection, setAnswerCallback) => {
 };
 
 export const sendAnswer = async (answer) => {
+  const db = await dbPromise;
   if (db) await set(ref(db, "webrtc/answer"), answer);
 };
 
 export const sendIceCandidate = async (candidate, role) => {
+  const db = await dbPromise;
   if (db) await push(ref(db, `webrtc/${role}/iceCandidates`), candidate);
 };
 
 export const sendOffer = async (peerConnection) => {
+  const db = await dbPromise;
+
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
 
