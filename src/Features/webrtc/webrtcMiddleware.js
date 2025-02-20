@@ -8,7 +8,7 @@ const webrtcMiddleware = (store) => (next) => (action) => {
     initiateConnection(store);
   } else if (action.type === "webrtc/receiveSignal") {
     receiveSignal(store, action.payload);
-  } else if (action.type === "shapes/update") {
+  } else if (action.type === "shapes/setSelectedShapeId") {
     if (dataChannel && dataChannel.readyState === "open") {
       dataChannel.send(JSON.stringify(action));
     }
@@ -39,7 +39,7 @@ const initiateConnection = async (store) => {
 
   const qrCodeData = JSON.stringify({sdp: offer});
   const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
-  store.dispatch({type: "webrtc/setQrCode", payload: qrCodeUrl});
+  store.dispatch({type: "webrtc/setQrCodeDataURL", payload: qrCodeUrl});
 };
 
 const receiveSignal = async (store, signal) => {
@@ -53,7 +53,7 @@ const receiveSignal = async (store, signal) => {
 
       const qrCodeData = JSON.stringify({sdp: answer});
       const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
-      store.dispatch({type: "webrtc/setQrCode", payload: qrCodeUrl});
+      store.dispatch({type: "webrtc/setQrCodeDataURL", payload: qrCodeUrl});
     }
   } else if (signal.candidate) {
     await peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
