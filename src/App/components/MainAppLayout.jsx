@@ -1,12 +1,25 @@
 import React from "react";
 
+import {useSelector} from "react-redux";
+
+import useInitDeviceType from "Features/layout/hooks/useInitDeviceType";
+import useInitSelectProject from "Features/projects/hooks/useInitSelectProject";
+
 import {Box, Paper} from "@mui/material";
 
-import MainListPanel from "Features/listPanel/components/MainListPanel";
-import MainMapEditor from "Features/mapEditor/components/MainMapEditor";
-import MainTreedEditor from "Features/threedEditor/components/MainTreedEditor";
+import LayoutDesktop from "Features/layout/components/LayoutDesktop";
+import LayoutMobile from "Features/layout/components/LayoutMobile";
 
 export default function MainAppLayout() {
+  // init
+
+  useInitDeviceType();
+  useInitSelectProject();
+
+  // data
+
+  const deviceType = useSelector((s) => s.layout.deviceType);
+
   return (
     <Box
       sx={{
@@ -18,31 +31,8 @@ export default function MainAppLayout() {
         display: "flex",
       }}
     >
-      <Box sx={{p: 4, width: 0.3, height: 1}}>
-        <Paper
-          sx={{width: 1, height: 1, display: "flex", flexDirection: "column"}}
-        >
-          <MainListPanel />
-        </Paper>
-      </Box>
-
-      <Box sx={{width: 0.7, height: 1, display: "flex"}}>
-        <Box sx={{width: 0.5, height: 1, p: 4}}>
-          <Paper
-            sx={{width: 1, height: 1, display: "flex", flexDirection: "column"}}
-          >
-            <MainMapEditor />
-          </Paper>
-        </Box>
-
-        <Box sx={{p: 4, width: 0.5, height: 1}}>
-          <Paper
-            sx={{width: 1, height: 1, display: "flex", flexDirection: "column"}}
-          >
-            <MainTreedEditor />
-          </Paper>
-        </Box>
-      </Box>
+      {deviceType === "DESKTOP" && <LayoutDesktop />}
+      {deviceType === "MOBILE" && <LayoutMobile />}
     </Box>
   );
 }

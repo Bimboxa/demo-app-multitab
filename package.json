@@ -12,9 +12,12 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.5",
     "@mui/material": "^6.4.5",
     "@reduxjs/toolkit": "^2.5.1",
+    "jsqr": "^1.4.0",
     "konva": "^9.3.18",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",

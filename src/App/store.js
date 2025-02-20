@@ -1,11 +1,19 @@
 import {configureStore} from "@reduxjs/toolkit";
 
+import webrtcReducer from "Features/webrtc/webrtcSlice";
+import layoutReducer from "Features/layout/layoutSlice";
+import projectsReducer from "Features/projects/projectsSlice";
 import shapesReducer from "Features/shapes/shapesSlice";
 import threedEditorReducer from "Features/threedEditor/threedEditorSlice";
 import mapEditorReducer from "Features/mapEditor/mapEditorSlice";
 
+import webrtcMiddleware from "Features/webrtc/webrtcMiddleware";
+
 export default configureStore({
   reducer: {
+    webrtc: webrtcReducer,
+    layout: layoutReducer,
+    projects: projectsReducer,
     shapes: shapesReducer,
     mapEditor: mapEditorReducer,
     threedEditor: threedEditorReducer,
@@ -13,5 +21,5 @@ export default configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }),
+    }).concat(webrtcMiddleware),
 });
