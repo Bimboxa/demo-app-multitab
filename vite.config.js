@@ -5,6 +5,7 @@ import path from "path";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: "/demo-app-multitab/",
   resolve: {
     alias: {
       App: "/src/App",
