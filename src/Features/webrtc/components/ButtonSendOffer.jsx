@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import {useSelector} from "react-redux";
 
 import {
@@ -18,34 +18,60 @@ export default function ButtonSendOffer() {
 
   // state
 
-  const [peerConnection, setPeerConnection] = useState(null);
+  const peerConnectionRef = useRef(null);
 
   useEffect(() => {
-    const {peerConnection, dataChannel} = createPeerConnection();
-    setPeerConnection(peerConnection);
+    const setupConnection = async () => {
+      if (peerConnectionRef.current) {
+        console.log("✅ PeerConnection already exists, skipping creation.");
+        return;
+      }
 
-    listenForAnswer(peerConnection);
+      const {peerConnection, dataChannel} = createPeerConnection(true);
+      peerConnectionRef.current = peerConnection;
 
-    listenForIceCandidates(peerConnection, "mobile");
+      try {
+        console.log("📡 Waiting for answer from mobile...");
 
-    dataChannel.onopen = () => {
-      console.log("dataChannel opened");
-      // dispatch here the initial update.
-      // dataChannel.send(JSON.stringify({type: "shapes/INITIAL_UPDATE"}));
-    };
+        // 🔹 Wait for the answer before proceeding
+        const answer = await new Promise((resolve) => {
+          listenForAnswer(peerConnection, resolve); // This ensures answer is properly set before proceeding
+        });
 
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log("Sending ice candidate to mobile");
-        sendIceCandidate(event.candidate, "desktop");
+        console.log("✅ Received answer :", answer);
+        console.log("Proceeding with ICE exchange...");
+
+        peerConnection.onicecandidate = async (event) => {
+          if (event.candidate) {
+            console.log("📡 Sending ICE candidate to mobile...");
+            await sendIceCandidate(event.candidate, "desktop");
+          }
+        };
+
+        // 🔹 Ensure ICE Candidates are exchanged properly
+        await listenForIceCandidates(peerConnection, "mobile");
+
+        // 🔹 Ensure DataChannel works correctly
+        dataChannel.onopen = () => {
+          console.log("✅ DataChannel is open!");
+          //dataChannel.send(JSON.stringify({type: "shapes/INITIAL_UPDATE"}));
+        };
+      } catch (error) {
+        console.error("❌ WebRTC setup failed:", error);
       }
     };
+
+    setupConnection();
   }, []);
 
   // handler
 
   function handleClick() {
-    sendOffer(peerConnection);
+    if (!peerConnectionRef.current) {
+      console.error("❌ peerConnection is not initialized yet!");
+      return;
+    }
+    sendOffer(peerConnectionRef.current);
   }
 
   return (
